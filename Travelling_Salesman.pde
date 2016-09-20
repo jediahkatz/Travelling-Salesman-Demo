@@ -1,3 +1,14 @@
+ArrayList<Point> points;
+boolean addingPoints;
+char nextPoint;
+Route dRoute;
+Route bRoute;
+Slider slider;
+boolean dragging;
+String permutations;
+String time;
+boolean solved;
+
 void setup() {
   size(500, 500);
   textFont(createFont("Helvetica", 12));
@@ -5,15 +16,14 @@ void setup() {
   strokeWeight(10);
   textAlign(CENTER);
   noLoop();
-  ArrayList<Point> points = new ArrayList<Point>();
-  boolean addingPoints = true;
-  char nextPoint = 'A'-1;
-  Route dRoute;
-  Route bRoute;
-  Slider slider = new Slider(440, 34);
-  boolean dragging = false;
-  String permutations = "";
-  String time = "";
+  points = new ArrayList<Point>();
+  addingPoints = true;
+  nextPoint = 'A'-1;
+  slider = new Slider(440, 34);
+  dragging = false;
+  permutations = "";
+  time = "";
+  solved = false;
 }
 
 //starts from first Point in array
@@ -97,7 +107,7 @@ void mousePressed() {
       nextPoint++;
     }
     redraw();
-  } else if (points.size() > 3 && mouseX>10 && mouseX<110 && mouseY>10 && mouseY<40) {
+  } else if (addingPoints && points.size() > 3 && mouseX>10 && mouseX<110 && mouseY>10 && mouseY<40) {
     addingPoints=false;
     thread("TSP");
   } else if (dist(mouseX, mouseY, slider.sx, 34) <= 6.5) {
@@ -120,11 +130,19 @@ void mouseReleased() {
   }
 }
 
+void keyPressed() {
+  if(key == ' ' && (addingPoints || solved)) {
+    setup();
+    redraw();
+  }
+}
+
 void TSP() {
   Route best = findBestRoute(points.toArray(new Point[0]));
   println(best);
   dRoute = best;
   redraw();
+  solved = true;
 }
 
 Point[] nextPermutation(Point[] c) {
